@@ -5,6 +5,8 @@
     <script src="//d3js.org/d3.v3.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r74/three.js"></script>
     <script type="text/javascript" src="http://polyk.ivank.net/polyk.js"></script>
+    <script type="text/javascript" src="TrackballControls.js"></script>
+    <script type="text/javascript" src="Detector.js"></script>
 <style>
 #displays {
     width:1000px;
@@ -13,7 +15,7 @@
 }
 #c1,#c2 {
     width:500px;
-    height:800px;
+    height:500px;
     /*position:absolute;*/
 }
 #c1{
@@ -36,16 +38,17 @@ circle.polygon_v {
 </head>
 <body>
     <div id="displays">
-        <svg id="c1" width="500" height="800"></svg>
-        <canvas id="c2" width="500" height="800"></canvas>
+        <svg id="c1" width="500" height="500"></svg>
+        <canvas id="c2" width="500" height="500"></canvas>
     </div>
+<script type="text/javascript" src="graphics3d.js"></script>
 <script>
 
 function flatten_arr(array){
     return array.reduce(function(a,b){return a.concat(b);},[]);
 }
 
-var width = 500, height=800;
+var width = 500, height=500;
 
 var polygon = [];
 for (var i = 0; i < 6; i++) {
@@ -106,7 +109,8 @@ function poly_d_fn(d) {
 ///////////
 
 redraw();
-
+init_graphics3d(width,height,document.getElementById("c2"));
+animate3d();
 </script>
 </body>
 </html>
