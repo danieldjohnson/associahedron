@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+<head>
+    <title>Associahedron Explorer</title>
+    <script src="//d3js.org/d3.v3.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r74/three.js"></script>
+    <script type="text/javascript" src="http://polyk.ivank.net/polyk.js"></script>
+<style>
+#displays {
+    width:1000px;
+    position:relative;
+    border: 1px black;
+}
+#c1,#c2 {
+    width:500px;
+    height:800px;
+    /*position:absolute;*/
+}
+#c1{
+    float:left;
+}
+#c2{
+    /*right:0;*/
+}
+
+path.polygon {
+  stroke: #000;
+  fill: #eee;
+  line-width: 5px;
+}
+circle.polygon_v {
+  fill: #00F;
+}
+</style>
+
+</head>
+<body>
+    <div id="displays">
+        <svg id="c1" width="500" height="800"></svg>
+        <canvas id="c2" width="500" height="800"></canvas>
+    </div>
+<script>
+
+function flatten_arr(array){
+    return array.reduce(function(a,b){return a.concat(b);},[]);
+}
+
+var width = 500, height=800;
+
+var polygon = [];
+for (var i = 0; i < 6; i++) {
+    polygon[i] = [(width/2)+200*Math.cos(2*i*Math.PI/6), (height/2)+200*Math.sin(2*i*Math.PI/6)];
+}
+var fp = flatten_arr(polygon);
+console.log(fp,PolyK.IsSimple(fp), PolyK.IsConvex(fp));
+
+var svg = d3.select("#c1");
+var polygon_path = svg.append("g").selectAll("path.polygon");
+var polygon_verts = svg.append("g").selectAll("circle.polygon_v");
+
+///////////
+
+function dragmove(d,i) {
+  console.log("Drag");
+
+  var oldx = d[0];
+  var oldy = d[1];
+  d[0] = d3.event.x;
+  d[1] = d3.event.y;
+
+  if(d[0]<0) d[0]=0;
+  if(d[0]>width) d[0]=width;
+  if(d[1]<0) d[1]=0;
+  if(d[1]>height) d[1]=height;
+
+  var fp = flatten_arr(polygon);
+  if(!(PolyK.IsSimple(fp) && PolyK.IsConvex(fp))){
+    d[0] = oldx;
+    d[1] = oldy;
+  }
+
+  redraw();
+}
+var dragpoly = d3.behavior.drag().on("drag", dragmove)
+
+function redraw(){
+    polygon_path = polygon_path.data([polygon]);
+    polygon_path.exit().remove();
+    polygon_path.enter().append("path").attr("class","polygon");
+    polygon_path.attr("d", poly_d_fn);
+    polygon_path.attr("class", "polygon");
+
+    polygon_verts = polygon_verts.data(polygon);
+    polygon_verts.exit().remove();
+    polygon_verts.enter().append("circle");
+    polygon_verts.attr("class","polygon_v")
+      .attr("transform", function(d) { return "translate(" + d + ")"; })
+      .attr("r", 6)
+      .call(dragpoly);
+}
+
+function poly_d_fn(d) {
+  return "M" + d.join("L") + "Z";
+}
+
+///////////
+
+redraw();
+
+</script>
+</body>
+</html>
