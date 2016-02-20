@@ -85,7 +85,7 @@ var triangulations = [
     [[0,1,2],[0,3,5],[0,2,3],[3,4,5]],
 
     [[0,1,2],[0,2,4],[2,3,4],[0,4,5]],
-    [[1,2,3],[0,1,5],[0,3,5],[3,4,5]]
+    [[1,2,3],[0,1,5],[1,3,5],[3,4,5]]
     ]
 
 ///////////
@@ -127,6 +127,13 @@ function redraw(){
       .attr("transform", function(d) { return "translate(" + d + ")"; })
       .attr("r", 6)
       .call(dragpoly);
+
+    var assoc_points = [];
+    for (var i = 0; i < triangulations.length; i++) {
+      var T = triangulations[i];
+      assoc_points.push(area_vector(T));
+    }
+    update_asschdron(assoc_points);
 }
 
 function poly_d_fn(d) {
@@ -135,7 +142,7 @@ function poly_d_fn(d) {
 
 // Computes the area sum of vertex v under triangulation T
 function area_sum(v, T) {
-  var area;
+  var area = 0;
 
   // For every triangle in T
   for (var i = 0; i < T.length; i++) {
@@ -168,8 +175,8 @@ function area_vector(T) {
 
 ///////////
 
-redraw();
 init_graphics3d(width,height,document.getElementById("c2"));
+redraw();
 animate3d();
 </script>
 </body>
