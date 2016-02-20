@@ -7,6 +7,7 @@
     <script type="text/javascript" src="http://polyk.ivank.net/polyk.js"></script>
     <script type="text/javascript" src="TrackballControls.js"></script>
     <script type="text/javascript" src="Detector.js"></script>
+    <script type="text/javascript" src="pca.js"></script>
 <style>
 #displays {
     width:1000px;
@@ -86,7 +87,7 @@ var triangulations = [
 
     [[0,1,2],[0,2,4],[2,3,4],[0,4,5]],
     [[1,2,3],[0,1,5],[1,3,5],[3,4,5]]
-    ]
+    ];
 
 // Area vectors
 var area_vector_array = triangulations.map(area_vector);
@@ -136,7 +137,8 @@ function redraw(){
       var T = triangulations[i];
       assoc_points.push(area_vector(T));
     }
-    update_asschdron(assoc_points);
+    assoc = pcaR6toR3(assoc_points);
+    update_asschdron(assoc);
 }
 
 function poly_d_fn(d) {
@@ -174,6 +176,17 @@ function area_vector(T) {
   }
 
   return av;
+}
+
+function pcaR6toR3(associahedron) {
+  var pca = new PCA();
+  associahedron = pca.scale(associahedron,true,true);
+  pc = pca.pca(associahedron,3);
+  output = [];
+  for (var i = 0; i < pc.length; i++) {
+    output[i] = pc[i].slice(0,3);
+  }
+  return output;
 }
 
 ///////////
