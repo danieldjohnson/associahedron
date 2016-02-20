@@ -133,9 +133,38 @@ function poly_d_fn(d) {
   return "M" + d.join("L") + "Z";
 }
 
+// Computes the area sum of vertex v under triangulation T
+function area_sum(v, T) {
+  var area;
 
+  // For every triangle in T
+  for (var i = 0; i < T.length; i++) {
+    // If v is in the triangle
+    if (T[i].indexOf(v) != -1) {
+      // Flatten the triangle for PolyK
+      var incidentTriangle = [];
+      for (var j = 0; j < 3; ++j) {
+        incidentTriangle[j] = polygon[T[i][j]];
+      }
+      var ft = flatten_arr(incidentTriangle);
+      
+      // Add the area
+      area += PolyK.GetArea(ft);
+    }
+  }
 
+  return area;
+}
 
+function area_vector(T) {
+  var av = [];
+
+  for (var i = 0; i < polygon.length; ++i) {
+    av[i] = area_sum(i, T);
+  }
+
+  return av;
+}
 
 ///////////
 
