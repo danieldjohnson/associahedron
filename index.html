@@ -64,9 +64,9 @@ var polygon_verts = svg.append("g").selectAll("circle.polygon_v");
 
 
 // Triangulation blocks
-//   All triangle from one vertex
+//   All triangles from one vertex
 //   N-shaped triangulations
-//   mirror N-shaped triangulation
+//   Mirror N-shaped triangulation
 //   Central triangle
 var triangulations = [
     [[0,1,2],[0,2,3],[0,3,4],[0,4,5]],
@@ -87,6 +87,9 @@ var triangulations = [
     [[0,1,2],[0,2,4],[2,3,4],[0,4,5]],
     [[1,2,3],[0,1,5],[1,3,5],[3,4,5]]
     ]
+
+// Area vectors
+var area_vector_array = triangulations.map(area_vector);
 
 ///////////
 
