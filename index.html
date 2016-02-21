@@ -170,7 +170,7 @@ function redraw(){
       var T = triangulations[i];
       assoc_points.push(area_vector(T));
     }
-
+    
     var assoc;
     if(params["Axis mode"] == 'Subspace'){
       var axes = gs_orthonormalize(assoc_points);
@@ -283,9 +283,7 @@ function gs_orthonormalize(vectors) {
   }
 
   for (var i = 0; i < orth.length; i++) {
-    console.log(orth);
     var magnitude = numeric.norm2(orth[i]);
-    console.log(magnitude);
     if (magnitude < .0000001) {
       orth[i] = null;
     }
@@ -302,11 +300,6 @@ function gs_orthonormalize(vectors) {
 
   return orth.filter(function isNull(elem) {return elem != null;});
 }
-
-var test = [[3, 1], [2, 2]];
-var testout = gs_orthonormalize(test);
-console.log("Testout is ");
-console.log(testout);
 
 ///////////
 
