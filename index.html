@@ -72,8 +72,8 @@ console.log(fp,PolyK.IsSimple(fp), PolyK.IsConvex(fp));
 
 var svg = d3.select("#c1");
 var polygon_path = svg.append("g").selectAll("path.polygon");
-var polygon_verts = svg.append("g").selectAll("circle.polygon_v");
 var triangulation_path = svg.append("g").selectAll("path.triangulation");
+var polygon_verts = svg.append("g").selectAll("circle.polygon_v");
 
 var gui = new dat.GUI();
 var params = {
