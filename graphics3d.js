@@ -68,7 +68,9 @@ function init_graphics3d(w,h,cvs, gui) {
     // world
 
     scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2( 0xffffff, 0*0.002 );
+    scene.fog = new THREE.FogExp2( 0xffffff, 0.13 );
+
+    gui.add(scene.fog, 'density',0,1).onChange(render);
 
     asschdron_geometry = new THREE.Geometry();
     asschdron_lines = new THREE.Geometry();
@@ -104,7 +106,7 @@ function init_graphics3d(w,h,cvs, gui) {
     asschdron_lines.computeLineDistances();
 
     //vertexColors: THREE.VertexColors,
-    asschdron_material =  new THREE.MeshBasicMaterial( { wireframe:false, vertexColors: THREE.VertexColors,  shading: THREE.FlatShading } );
+    asschdron_material =  new THREE.MeshBasicMaterial( { side:THREE.DoubleSide, vertexColors: THREE.VertexColors,  shading: THREE.FlatShading } );
 
     var mesh = new THREE.Mesh( asschdron_geometry, asschdron_material );
     mesh.position.x = 0;

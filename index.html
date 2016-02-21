@@ -170,9 +170,25 @@ function redraw(){
       var T = triangulations[i];
       assoc_points.push(area_vector(T));
     }
-    assoc = gs_orthonormalize(assoc_points);
+
+    var assoc;
+    if(params["Axis mode"] == 'Subspace'){
+      var axes = gs_orthonormalize(assoc_points);
+      console.log(axes);
+      assoc = project_all(assoc_points,axes);
+    }
+    else if(params["Axis mode"] == '123'){
+      assoc = axis_transpose(assoc_points, [0,1,2,3,4,5]);
+    }
+    else if(params["Axis mode"] == '135'){
+      assoc = axis_transpose(assoc_points, [0,2,4,1,3,5]);
+    }
+    else if(params["Axis mode"] == '124'){
+      assoc = axis_transpose(assoc_points, [0,1,3,2,4,5]);
+    }
+    
     console.log(assoc);
-    update_asschdron(assoc, false);
+    update_asschdron(assoc, (params["Axis mode"] != 'Subspace'));
 }
 
 function poly_d_fn(d) {
@@ -221,6 +237,40 @@ function pcaR6toR3(associahedron) {
     output[i] = pc[i].slice(0,3);
   }
   return output;
+}
+
+function axis_transpose(vects, transpose){
+  var newvects = [];
+  for (var i = 0; i < vects.length; i++) {
+    var vect = vects[i]
+    var nvect = [];
+    for (var j = 0; j < vect.length; j++) {
+      nvect[j] = vect[transpose[j]];
+    }
+    newvects.push(nvect);
+  }
+  return newvects;
+}
+
+function project_all(vects, axes){
+  var newvects = [];
+  for (var i = 0; i < vects.length; i++) {
+    var vect = numeric.sub(vects[i], vects[vects.length - 1]);
+    var nvect = [];
+    for (var j = 0; j < axes.length; j++) {
+      var axis = axes[j];
+      nvect[j] = scalar_project(vect, axis);
+    }
+    while(nvect.length < 6){
+      nvect.push(0);
+    }
+    newvects.push(nvect);
+  }
+  return newvects;
+}
+
+function scalar_project(v,axis){
+  return numeric.dot(v, axis) / numeric.norm2(axis);
 }
 
 // Returns an orthonormal set of vectors spanning
