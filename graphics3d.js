@@ -6,6 +6,9 @@ var asschdron_geometry;
 var asschdron_colors;
 var asschdron_lines;
 var bkgd_dists;
+var asschdron_points;
+var active_point = null;
+var active_triangulation = null;
 
 var asschdron_faces = [
     [5, 8, 11, 3, 13],
@@ -18,6 +21,9 @@ var asschdron_faces = [
     [10, 7, 4, 12, 2],
     [8, 5, 10, 2],
 ];
+
+var raycaster = new THREE.Raycaster();
+var mouse = new THREE.Vector2();
 
 var used = {}
 var asschdron_edges = [];
@@ -77,9 +83,12 @@ function init_graphics3d(w,h,cvs) {
             var c = face[j];
             var b = face[j+1];
             var tri = new THREE.Face3(a,b,c);
-            tri.vertexColors.push(asschdron_colors[a]);
-            tri.vertexColors.push(asschdron_colors[b]);
-            tri.vertexColors.push(asschdron_colors[c]);
+            tri.userData = tri.userData || {};
+            tri.userData.sourceColors = [asschdron_colors[a],asschdron_colors[b],asschdron_colors[c]];
+            tri.vertexColors.push(asschdron_colors[a].clone());
+            tri.vertexColors.push(asschdron_colors[b].clone());
+            tri.vertexColors.push(asschdron_colors[c].clone());
+            tri.color.setHSL(i/asschdron_faces.length, 1, 0.8);
             asschdron_geometry.faces.push(tri);
         }
     }
@@ -91,9 +100,9 @@ function init_graphics3d(w,h,cvs) {
     asschdron_lines.computeLineDistances();
 
     //vertexColors: THREE.VertexColors,
-    var face_material =  new THREE.MeshBasicMaterial( { wireframe:false, vertexColors: THREE.VertexColors,  shading: THREE.FlatShading } );
+    asschdron_material =  new THREE.MeshBasicMaterial( { wireframe:false, vertexColors: THREE.VertexColors,  shading: THREE.FlatShading } );
 
-    var mesh = new THREE.Mesh( asschdron_geometry, face_material );
+    var mesh = new THREE.Mesh( asschdron_geometry, asschdron_material );
     mesh.position.x = 0;
     mesh.position.y = 0;
     mesh.position.z = 0;
@@ -109,18 +118,16 @@ function init_graphics3d(w,h,cvs) {
     var line_material_front =  new THREE.LineBasicMaterial( { color: 0x000000, linewidth: 2, depthTest: true});
     var linesegs2 = new THREE.LineSegments(asschdron_lines,line_material_front);
     scene.add(linesegs2);
-    // lights
+    
+    var point_geometry = new THREE.SphereGeometry( 0.03, 32, 32 );
+    var point_material = new THREE.MeshBasicMaterial( {color: 0x000000} );
 
-    light = new THREE.DirectionalLight( 0xffffff );
-    light.position.set( 1, 1, 1 );
-    scene.add( light );
-
-    light = new THREE.DirectionalLight( 0x333333 );
-    light.position.set( -1, -1, -1 );
-    scene.add( light );
-
-    light = new THREE.AmbientLight( 0x222222 );
-    scene.add( light );
+    asschdron_points=[];
+    for (var i = 0; i < 14; i++) {
+        var point = new THREE.Mesh( point_geometry, point_material.clone() );
+        asschdron_points.push(point);
+        scene.add(point);
+    }
 
 
     // renderer
@@ -134,9 +141,20 @@ function init_graphics3d(w,h,cvs) {
 
     render();
 
+    //
+    
+    cvs.addEventListener("mousemove",function(e){
+        var rel = cvs.getBoundingClientRect();
+        var x = e.clientX - rel.left;
+        var y = e.clientY - rel.top;
+        mouse.x = (x/w)*2-1;
+        mouse.y = -((y/h)*2-1);
+        // console.log(x,y,w,h,mouse.x, mouse.y);
+        render();
+    });
 }
 
-function update_asschdron(points){
+function update_asschdron(points, extra_dim_color){
     var min_coord=Infinity, max_coord=-Infinity;
     for (var i = 0; i < points.length; i++) {
         var pt = points[i];
@@ -150,6 +168,21 @@ function update_asschdron(points){
                                     (pt[4]-min_coord)/(max_coord-min_coord),
                                     (pt[5]-min_coord)/(max_coord-min_coord));
     }
+    if(extra_dim_color){
+        for (var i = 0; i < asschdron_geometry.faces.length; i++) {
+            var f = asschdron_geometry.faces[i];
+            for (var j = 0; j < f.vertexColors.length; j++) {
+                f.vertexColors[j].copy(f.userData.sourceColors[j]);
+            }
+        }
+    }else{
+        for (var i = 0; i < asschdron_geometry.faces.length; i++) {
+            var f = asschdron_geometry.faces[i];
+            for (var j = 0; j < f.vertexColors.length; j++) {
+                f.vertexColors[j].copy(f.color);
+            }
+        }
+    }
     asschdron_geometry.normalize();
     asschdron_geometry.verticesNeedUpdate = true;
     asschdron_geometry.colorsNeedUpdate = true;
@@ -157,6 +190,9 @@ function update_asschdron(points){
     asschdron_lines.lineDistancesNeedUpdate = true;
     asschdron_lines.computeLineDistances();
     bkgd_dists.needsUpdate = true;
+    for (var i = 0; i < asschdron_points.length; i++) {
+        asschdron_points[i].position.copy(asschdron_geometry.vertices[i]);
+    }
     render();
 }
 
@@ -168,6 +204,30 @@ function animate3d() {
 }
 
 function render() {
+
+    raycaster.setFromCamera( mouse, camera );   
+    var intersects = raycaster.intersectObjects( asschdron_points );
+    if(intersects.length != 0 ){
+        var min_dist = Infinity;
+        var min_pt = null;
+        for (var i = 0; i < intersects.length; i++) {
+            if(intersects[i].distance < min_dist){
+                min_dist = intersects[i].distance;
+                min_pt = intersects[i].object;
+            }
+        }
+        if(active_point != min_pt){
+            if(active_point){
+                active_point.material.color.set( 0x000000 );
+                active_point.material.depthTest = true;
+            }
+            active_point = min_pt;
+            active_point.material.color.set( 0x0000ff );
+            active_point.material.depthTest = false;
+            active_triangulation = asschdron_points.indexOf(min_pt);
+            redraw();
+        }
+    }
 
     renderer.render( scene, camera );
 

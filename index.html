@@ -32,6 +32,12 @@ path.polygon {
   fill: #eee;
   line-width: 5px;
 }
+path.triangulation {
+  stroke: #797;
+  fill: transparent;
+  line-width: 4px;
+  pointer-events:none;
+}
 circle.polygon_v {
   fill: #00F;
 }
@@ -62,6 +68,7 @@ console.log(fp,PolyK.IsSimple(fp), PolyK.IsConvex(fp));
 var svg = d3.select("#c1");
 var polygon_path = svg.append("g").selectAll("path.polygon");
 var polygon_verts = svg.append("g").selectAll("circle.polygon_v");
+var triangulation_path = svg.append("g").selectAll("path.triangulation");
 
 
 
@@ -130,6 +137,20 @@ function redraw(){
       .attr("r", 6)
       .call(dragpoly);
 
+    var c_tri = [];
+    if(active_triangulation !== null){
+      var T = triangulations[active_triangulation];
+      c_tri = T.map(function(tri){
+        return tri.map(function(pt) {
+          return polygon[pt];
+        });
+      });
+    }
+    triangulation_path = triangulation_path.data(c_tri);
+    triangulation_path.exit().remove();
+    triangulation_path.enter().append("path").attr("class","triangulation");
+    triangulation_path.attr("d", poly_d_fn);
+
     var assoc_points = [];
     for (var i = 0; i < triangulations.length; i++) {
       var T = triangulations[i];
@@ -137,7 +158,7 @@ function redraw(){
     }
     assoc = gs_orthonormalize(assoc_points);
     console.log(assoc);
-    update_asschdron(assoc);
+    update_asschdron(assoc, false);
 }
 
 function poly_d_fn(d) {
