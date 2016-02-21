@@ -135,9 +135,8 @@ function redraw(){
       var T = triangulations[i];
       assoc_points.push(area_vector(T));
     }
-    console.log(assoc_points);
-    assoc = pcaR6toR3(assoc_points);
-    //gs_orthonormalize(assoc_points);
+    assoc = gs_orthonormalize(assoc_points);
+    console.log(assoc);
     update_asschdron(assoc);
 }
 
@@ -189,20 +188,27 @@ function pcaR6toR3(associahedron) {
   return output;
 }
 
-//Replaces the vectors with orthonormal ones with the same span
+// Returns an orthonormal set of vectors spanning
+// the same subspace as the input vectors
 function gs_orthonormalize(vectors) {
-  for (var i = 0; i < vectors.length; i++) {
-    var magnitude = numeric.norm2(vectors[i]);
-    vectors[i] = vectors[i].map(function normalize(num) {return num / magnitude;});
+  var orth = [];
 
-    for (var j = i + 1; j < vectors.length; j++) {
-      innerProductQuotient = (numeric.dot(vectors[j], vectors[i]) /
-                              numeric.dot(vectors[i], vectors[i]));
-      proj = vectors[i].map(function mult(num) {return num * innerProductQuotient;});
-
-      vectors[j] -= proj;
-    }
+  for (var i = 0; i < vectors.length - 1; i++) {
+    orth[i] = numeric.sub(vectors[i], vectors[vectors.length - 1]);
   }
+
+  for (var i = 0; i < orth.length; i++) {
+    for (var j = i + 1; j < orth.length; j++) {
+      innerProductQuotient = (numeric.dot(orth[j], orth[i]) /
+                              numeric.dot(orth[i], orth[i]));
+      proj = numeric.mul(orth[i], innerProductQuotient);
+      orth[j] = numeric.sub(orth[j], proj);
+    }
+    var magnitude = numeric.norm2(orth[i]);
+    orth[i] = numeric.div(orth[i], magnitude);
+  }
+  
+  return orth;
 }
 
 ///////////
