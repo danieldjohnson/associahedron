@@ -9,7 +9,6 @@
     <script type="text/javascript" src="Detector.js"></script>
     <script type="text/javascript" src="pca.js"></script>
     <script type="text/javascript" src="numeric.js"></script>
-    <script type="text/javascript" src="dat.gui.min.js"></script>
 <style>
 #displays {
     width:1000px;
@@ -170,7 +169,7 @@ function redraw(){
       var T = triangulations[i];
       assoc_points.push(area_vector(T));
     }
-    
+
     var assoc;
     if(params["Axis mode"] == 'Subspace'){
       var axes = gs_orthonormalize(assoc_points);
