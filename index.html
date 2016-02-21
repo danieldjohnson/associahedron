@@ -9,6 +9,7 @@
     <script type="text/javascript" src="Detector.js"></script>
     <script type="text/javascript" src="pca.js"></script>
     <script type="text/javascript" src="numeric.js"></script>
+    <script type="text/javascript" src="dat.gui.min.js"></script>
 <style>
 #displays {
     width:1000px;
@@ -58,10 +59,14 @@ function flatten_arr(array){
 
 var width = 500, height=500;
 
-var polygon = [];
-for (var i = 0; i < 6; i++) {
+function reset_poly(){
+  for (var i = 0; i < 6; i++) {
     polygon[i] = [(width/2)+200*Math.cos(2*i*Math.PI/6), (height/2)+200*Math.sin(2*i*Math.PI/6)];
+  }
 }
+
+var polygon = [];
+reset_poly();
 var fp = flatten_arr(polygon);
 console.log(fp,PolyK.IsSimple(fp), PolyK.IsConvex(fp));
 
@@ -70,7 +75,16 @@ var polygon_path = svg.append("g").selectAll("path.polygon");
 var polygon_verts = svg.append("g").selectAll("circle.polygon_v");
 var triangulation_path = svg.append("g").selectAll("path.triangulation");
 
-
+var gui = new dat.GUI();
+var params = {
+  "Axis mode": "Subspace",
+  "Reset hexagon": function(){
+    reset_poly();
+    redraw();
+  }
+};
+gui.add(params, 'Axis mode', ['Subspace',"123","135","124"]).onChange(redraw);
+gui.add(params, 'Reset hexagon');
 
 // Triangulation blocks
 //   All triangles from one vertex
@@ -234,7 +248,7 @@ function gs_orthonormalize(vectors) {
 
 ///////////
 
-init_graphics3d(width,height,document.getElementById("c2"));
+init_graphics3d(width,height,document.getElementById("c2"), gui.addFolder("3D options"));
 redraw();
 animate3d();
 </script>

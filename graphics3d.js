@@ -40,7 +40,7 @@ for (var i = 0; i < asschdron_faces.length; i++) {
     }
 }
 
-function init_graphics3d(w,h,cvs) {
+function init_graphics3d(w,h,cvs, gui) {
 
     camera = new THREE.PerspectiveCamera( 60, w / h, 0.001, 100000 );
     camera.position.z = 3;
@@ -53,6 +53,10 @@ function init_graphics3d(w,h,cvs) {
 
     controls.noZoom = false;
     controls.noPan = true;
+
+    gui.add(controls, 'rotateSpeed', 0, 5);
+    gui.add(controls, 'zoomSpeed', 0, 5);
+    gui.add(controls, 'dynamicDampingFactor', 0, 1);
 
     controls.staticMoving = false;
     controls.dynamicDampingFactor = 0.1;
