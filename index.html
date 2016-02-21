@@ -198,18 +198,30 @@ function gs_orthonormalize(vectors) {
   }
 
   for (var i = 0; i < orth.length; i++) {
-    for (var j = i + 1; j < orth.length; j++) {
-      innerProductQuotient = (numeric.dot(orth[j], orth[i]) /
-                              numeric.dot(orth[i], orth[i]));
-      proj = numeric.mul(orth[i], innerProductQuotient);
-      orth[j] = numeric.sub(orth[j], proj);
-    }
+    console.log(orth);
     var magnitude = numeric.norm2(orth[i]);
-    orth[i] = numeric.div(orth[i], magnitude);
+    console.log(magnitude);
+    if (magnitude < .0000001) {
+      orth[i] = null;
+    }
+    else{
+      for (var j = i + 1; j < orth.length; j++) {
+        innerProductQuotient = (numeric.dot(orth[j], orth[i]) /
+                                numeric.dot(orth[i], orth[i]));
+        proj = numeric.mul(orth[i], innerProductQuotient);
+        orth[j] = numeric.sub(orth[j], proj);
+      }
+      orth[i] = numeric.div(orth[i], magnitude);
+    }
   }
-  
-  return orth;
+
+  return orth.filter(function isNull(elem) {return elem != null;});
 }
+
+var test = [[3, 1], [2, 2]];
+var testout = gs_orthonormalize(test);
+console.log("Testout is ");
+console.log(testout);
 
 ///////////
 
