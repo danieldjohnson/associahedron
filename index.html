@@ -9,23 +9,57 @@
     <script type="text/javascript" src="Detector.js"></script>
     <script type="text/javascript" src="numeric.js"></script>
     <script type="text/javascript" src="dat.gui.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 <style>
+body {
+  overflow: hidden;
+}
+
 #displays {
-    width:100%;
-    position:relative;
-    border: 1px black;
+  display: flex;
+  position:absolute;
+  top:0;
+  left:0;
+  bottom:0;
+  right:0;
 }
-#c1,#c2 {
-    width:50%;
-    height:auto;
-    max-width:500px;
-    /*position:absolute;*/
+#c1c {
+  flex: 4;
+  min-width: 200px;
 }
-#c1{
-    float:left;
+#c2c {
+  flex: 4;
+  min-width: 200px;
 }
-#c2{
-    /*right:0;*/
+#c1,#c2{
+  width:100%;
+  height:auto;
+  max-width:500px;
+}
+#info {
+  flex: initial;
+  width:400px;
+  min-width: 200px;
+  height: 100%;
+  overflow: scroll;
+}
+#infopanel {
+  margin:20px;
+}
+.separator {
+  margin-top:10px;
+  margin-bottom:10px;
+  border-bottom: 1px solid #eee;
+}
+.attrib {
+  color: #222;
+  font-style: italic;
+}
+.imgembed {
+  width: 200px;
+  max-width: 100%;
+  margin:0 auto;
+  display:block;
 }
 
 path.polygon {
@@ -54,8 +88,36 @@ circle.polygon_v {
 </head>
 <body>
     <div id="displays">
-        <svg id="c1" width="500" height="500" viewBox="0 0 500 500"></svg>
-        <canvas id="c2" width="500" height="500"></canvas>
+        <div id="c1c"><svg id="c1" width="500" height="500" viewBox="0 0 500 500"></svg></div>
+        <div id="c2c"><canvas id="c2" width="500" height="500"></canvas></div>
+        <div id="info"><div id="infopanel" class="panel panel-default">
+          <div class="panel-body">
+            <button id="resetbutton" class="btn btn-warning">Reset Hexagon</button>
+            <div class="separator"></div>
+            <h1>Associahedron Explorer</h1>
+            <h4>A project by <strong>Daniel Johnson</strong>, <strong>Judge Lee</strong>, and <strong>Jackson Warley</strong>.</h4>
+            
+            <p>For any point set S, we can define the <strong>flip graph</strong> of S as a graph whose nodes are the set of triangulations of S, and whose edges represent triangulations which differ by a single flip. In particular, for a convex hexagon, the flip graph has the following structure:</p>
+            <img class="imgembed" src="flipgraph.png"/>
+
+            <p>The flip graph of any convex polygon is in fact the 1-skeleton of a particular class of polytope called an <strong>associahedron</strong>. The vertices of this associahedron represent triangulations of the original polygon, and the edges represent flip connections.</p>
+  
+            <p>Additionally, we can define an <strong>area vector</strong> for a triangulation T of a point set with n vertices as a vector of n values, where the ith value is the sum of the areas of the triangles adjacent to the ith point. The computation of the area vectors for two particular triangulations are shown below.</p>
+            <img class="imgembed" src="areavectors.png"/>
+            <p>In the 1990s, Gelfand, Kapranov, and Zelevinsky showed that the associahedron is a <em>secondary</em> polytope. In particular, this means that the convex hull of the area vectors for each triangulation of a convex polygon is equivalent to the associahedron for that polygon.</p>
+
+            <p>Our application displays a convex hexagon on the left, and the associahedron it corresponds to on the right. Features to try:</p>
+            <ul>
+            <li>Click and drag the associahedron to rotate it!</li>
+            <li>Scroll to zoom in and out.</li>
+            <li>Move the vertices of the hexagon, and see how the associahedron deforms!</li>
+            <li>Hover over a vertex of the associahedron to see the triangulation that corresponds to that node of the flip graph!</li>
+            </ul>
+            <p>Hope you enjoy!</p>
+            <div class="separator"></div>
+            <p class="attrib">Made for Math 198o at HMC, based on suggestion by Professor Satyan Devadoss. Images from <i>Discrete and Computational Geometry</i>, by Satyan Devadoss and Joseph O'Rourke.</p>
+          </div>
+        </div></div>
     </div>
 <script type="text/javascript" src="graphics3d.js"></script>
 <script>
@@ -83,14 +145,18 @@ var triangulation_path = svg.append("g").selectAll("path.triangulation");
 var polygon_path_fg = svg.append("g").selectAll("path.polygon_fg");
 var polygon_verts = svg.append("g").selectAll("circle.polygon_v");
 
-var gui = new dat.GUI();
-var params = {
-  "Reset hexagon": function(){
-    reset_poly();
-    redraw();
-  }
-};
-gui.add(params, 'Reset hexagon');
+// var gui = new dat.GUI();
+// var params = {
+//   "Reset hexagon": function(){
+//     reset_poly();
+//     redraw();
+//   }
+// };
+// gui.add(params, 'Reset hexagon');
+document.getElementById("resetbutton").addEventListener("click",function(){
+  reset_poly();
+  redraw();
+});
 
 // Triangulation blocks
 //   All triangles from one vertex

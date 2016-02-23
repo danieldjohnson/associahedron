@@ -64,7 +64,7 @@ function init_graphics3d(w,h,cvs) {
     // world
 
     scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2( 0xffffff, 0.13 );
+    scene.fog = new THREE.FogExp2( 0xffffff, 0 );
 
     asschdron_geometry = new THREE.Geometry();
     asschdron_lines = new THREE.Geometry();
