@@ -11,13 +11,14 @@
     <script type="text/javascript" src="dat.gui.min.js"></script>
 <style>
 #displays {
-    width:1000px;
+    width:100%;
     position:relative;
     border: 1px black;
 }
 #c1,#c2 {
-    width:500px;
-    height:500px;
+    width:50%;
+    height:auto;
+    max-width:500px;
     /*position:absolute;*/
 }
 #c1{
@@ -46,7 +47,7 @@ circle.polygon_v {
 </head>
 <body>
     <div id="displays">
-        <svg id="c1" width="500" height="500"></svg>
+        <svg id="c1" width="500" height="500" viewBox="0 0 500 500"></svg>
         <canvas id="c2" width="500" height="500"></canvas>
     </div>
 <script type="text/javascript" src="graphics3d.js"></script>

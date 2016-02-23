@@ -141,7 +141,7 @@ function init_graphics3d(w,h,cvs, gui) {
     renderer = new THREE.WebGLRenderer( { antialias: false, canvas:cvs } );
     renderer.setClearColor( scene.fog.color );
     renderer.setPixelRatio( window.devicePixelRatio );
-    renderer.setSize( w, h );
+    // renderer.setSize( w, h );
 
     //
 
@@ -153,8 +153,8 @@ function init_graphics3d(w,h,cvs, gui) {
         var rel = cvs.getBoundingClientRect();
         var x = e.clientX - rel.left;
         var y = e.clientY - rel.top;
-        mouse.x = (x/w)*2-1;
-        mouse.y = -((y/h)*2-1);
+        mouse.x = (x/(rel.right-rel.left))*2-1;
+        mouse.y = -((y/(rel.bottom-rel.top))*2-1);
         // console.log(x,y,w,h,mouse.x, mouse.y);
         render();
     });
