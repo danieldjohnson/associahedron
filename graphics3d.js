@@ -120,7 +120,7 @@ function init_graphics3d(w,h,cvs) {
     scene.add(linesegs2);
     
     var point_geometry = new THREE.SphereGeometry( 0.03, 32, 32 );
-    var point_material = new THREE.MeshBasicMaterial( {color: 0x000000} );
+    var point_material = new THREE.MeshBasicMaterial( {color: 0x000000, depthTest: false} );
 
     asschdron_points=[];
     for (var i = 0; i < 14; i++) {
@@ -219,11 +219,9 @@ function render() {
         if(active_point != min_pt){
             if(active_point){
                 active_point.material.color.set( 0x000000 );
-                active_point.material.depthTest = true;
             }
             active_point = min_pt;
-            active_point.material.color.set( 0x0000ff );
-            active_point.material.depthTest = false;
+            active_point.material.color.set( 0x00ff00 );
             active_triangulation = asschdron_points.indexOf(min_pt);
             redraw();
         }
