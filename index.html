@@ -29,18 +29,25 @@
 }
 
 path.polygon {
+  fill: #ccc;
+}
+path.polygon_fg {
   stroke: #000;
-  fill: #eee;
-  line-width: 5px;
+  fill: transparent;
+  stroke-width: 5px;
+  stroke-linecap: round;
 }
 path.triangulation {
-  stroke: #797;
+  stroke: #0f0;
   fill: transparent;
-  line-width: 4px;
+  stroke-width: 3px;
+  stroke-linecap: round;
   pointer-events:none;
 }
 circle.polygon_v {
-  fill: #00F;
+  fill: #0dd;
+  stroke: #000;
+  stroke-width:1px;
 }
 </style>
 
@@ -73,6 +80,7 @@ console.log(fp,PolyK.IsSimple(fp), PolyK.IsConvex(fp));
 var svg = d3.select("#c1");
 var polygon_path = svg.append("g").selectAll("path.polygon");
 var triangulation_path = svg.append("g").selectAll("path.triangulation");
+var polygon_path_fg = svg.append("g").selectAll("path.polygon_fg");
 var polygon_verts = svg.append("g").selectAll("circle.polygon_v");
 
 var gui = new dat.GUI();
@@ -139,7 +147,11 @@ function redraw(){
     polygon_path.exit().remove();
     polygon_path.enter().append("path").attr("class","polygon");
     polygon_path.attr("d", poly_d_fn);
-    polygon_path.attr("class", "polygon");
+
+    polygon_path_fg = polygon_path_fg.data([polygon]);
+    polygon_path_fg.exit().remove();
+    polygon_path_fg.enter().append("path").attr("class","polygon_fg");
+    polygon_path_fg.attr("d", poly_d_fn);
 
     polygon_verts = polygon_verts.data(polygon);
     polygon_verts.exit().remove();
