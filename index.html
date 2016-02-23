@@ -77,13 +77,11 @@ var polygon_verts = svg.append("g").selectAll("circle.polygon_v");
 
 var gui = new dat.GUI();
 var params = {
-  "Axis mode": "Subspace",
   "Reset hexagon": function(){
     reset_poly();
     redraw();
   }
 };
-gui.add(params, 'Axis mode', ['Subspace',"123","135","124"]).onChange(redraw);
 gui.add(params, 'Reset hexagon');
 
 // Triangulation blocks
@@ -172,23 +170,13 @@ function redraw(){
     }
 
     var assoc;
-    if(params["Axis mode"] == 'Subspace'){
-      var axes = gs_orthonormalize(assoc_points);
-      console.log(axes);
-      assoc = project_all(assoc_points,axes);
-    }
-    else if(params["Axis mode"] == '123'){
-      assoc = axis_transpose(assoc_points, [0,1,2,3,4,5]);
-    }
-    else if(params["Axis mode"] == '135'){
-      assoc = axis_transpose(assoc_points, [0,2,4,1,3,5]);
-    }
-    else if(params["Axis mode"] == '124'){
-      assoc = axis_transpose(assoc_points, [0,1,3,2,4,5]);
-    }
+   
+    var axes = gs_orthonormalize(assoc_points);
+    console.log(axes);
+    assoc = project_all(assoc_points,axes);
     
     console.log(assoc);
-    update_asschdron(assoc, (params["Axis mode"] != 'Subspace'));
+    update_asschdron(assoc, false);
 }
 
 function poly_d_fn(d) {
@@ -303,7 +291,7 @@ function gs_orthonormalize(vectors) {
 
 ///////////
 
-init_graphics3d(width,height,document.getElementById("c2"), gui.addFolder("3D options"));
+init_graphics3d(width,height,document.getElementById("c2"));
 redraw();
 animate3d();
 </script>

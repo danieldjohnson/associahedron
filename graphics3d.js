@@ -40,7 +40,7 @@ for (var i = 0; i < asschdron_faces.length; i++) {
     }
 }
 
-function init_graphics3d(w,h,cvs, gui) {
+function init_graphics3d(w,h,cvs) {
 
     camera = new THREE.PerspectiveCamera( 60, w / h, 0.001, 100000 );
     camera.position.z = 3;
@@ -54,10 +54,6 @@ function init_graphics3d(w,h,cvs, gui) {
     controls.noZoom = false;
     controls.noPan = true;
 
-    gui.add(controls, 'rotateSpeed', 0, 5);
-    gui.add(controls, 'zoomSpeed', 0, 5);
-    gui.add(controls, 'dynamicDampingFactor', 0, 1);
-
     controls.staticMoving = false;
     controls.dynamicDampingFactor = 0.1;
 
@@ -69,8 +65,6 @@ function init_graphics3d(w,h,cvs, gui) {
 
     scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2( 0xffffff, 0.13 );
-
-    gui.add(scene.fog, 'density',0,1).onChange(render);
 
     asschdron_geometry = new THREE.Geometry();
     asschdron_lines = new THREE.Geometry();
