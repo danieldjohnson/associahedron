@@ -10,35 +10,8 @@ var asschdron_points;
 var active_point = null;
 var active_triangulation = null;
 
-var asschdron_faces = [
-    [5, 8, 11, 3, 13],
-    [1, 7, 10, 5, 13],
-    [13, 3, 6, 9, 1],
-    [3, 11, 0, 6],
-    [0, 11, 8, 2, 12],
-    [1, 9, 4, 7],
-    [0, 12, 4, 9, 6],
-    [10, 7, 4, 12, 2],
-    [8, 5, 10, 2],
-];
-
 var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
-
-var used = {}
-var asschdron_edges = [];
-for (var i = 0; i < asschdron_faces.length; i++) {
-    var face = asschdron_faces[i];
-    for (var j = 0; j < face.length; j++) {
-        var first = face[j];
-        var second = face[(j+1)%face.length];
-        var key = Math.min(first,second) + 14*Math.max(first,second);
-        if(!used[key]){
-            used[key] = true;
-            asschdron_edges.push(first, second);
-        }
-    }
-}
 
 function init_graphics3d(w,h,cvs) {
 
@@ -221,7 +194,7 @@ function render() {
                 active_point.material.color.set( 0x000000 );
             }
             active_point = min_pt;
-            active_point.material.color.set( 0x00ff00 );
+            active_point.material.color.set( 0xe3632d );
             active_triangulation = asschdron_points.indexOf(min_pt);
             redraw();
         }

@@ -8,7 +8,6 @@
     <script type="text/javascript" src="TrackballControls.js"></script>
     <script type="text/javascript" src="Detector.js"></script>
     <script type="text/javascript" src="numeric.js"></script>
-    <script type="text/javascript" src="dat.gui.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 <style>
 body {
@@ -72,14 +71,13 @@ path.polygon_fg {
   stroke-linecap: round;
 }
 path.triangulation {
-  stroke: #0f0;
   fill: transparent;
   stroke-width: 3px;
   stroke-linecap: round;
   pointer-events:none;
 }
 circle.polygon_v {
-  fill: #0dd;
+  fill: #ddd;
   stroke: #000;
   stroke-width:1px;
 }
@@ -119,6 +117,7 @@ circle.polygon_v {
           </div>
         </div></div>
     </div>
+<script type="text/javascript" src="associahedron_data.js"></script>
 <script type="text/javascript" src="graphics3d.js"></script>
 <script>
 
@@ -145,43 +144,10 @@ var triangulation_path = svg.append("g").selectAll("path.triangulation");
 var polygon_path_fg = svg.append("g").selectAll("path.polygon_fg");
 var polygon_verts = svg.append("g").selectAll("circle.polygon_v");
 
-// var gui = new dat.GUI();
-// var params = {
-//   "Reset hexagon": function(){
-//     reset_poly();
-//     redraw();
-//   }
-// };
-// gui.add(params, 'Reset hexagon');
 document.getElementById("resetbutton").addEventListener("click",function(){
   reset_poly();
   redraw();
 });
-
-// Triangulation blocks
-//   All triangles from one vertex
-//   N-shaped triangulations
-//   Mirror N-shaped triangulation
-//   Central triangle
-var triangulations = [
-    [[0,1,2],[0,2,3],[0,3,4],[0,4,5]],
-    [[0,1,5],[1,2,3],[1,3,4],[1,4,5]],
-    [[0,1,2],[0,2,5],[2,3,4],[2,4,5]],
-    [[0,1,3],[1,2,3],[0,3,5],[3,4,5]],
-    [[0,1,4],[1,2,4],[2,3,4],[0,4,5]],
-    [[0,1,5],[1,2,5],[2,3,5],[3,4,5]],
-
-    [[0,1,3],[1,2,3],[0,3,4],[0,4,5]],
-    [[0,1,5],[1,2,4],[2,3,4],[1,4,5]],
-    [[0,1,2],[0,2,5],[2,3,5],[3,4,5]],
-
-    [[1,3,4],[1,2,3],[0,1,4],[0,4,5]],
-    [[0,1,5],[1,2,5],[2,3,4],[2,4,5]],
-    [[0,1,2],[0,3,5],[0,2,3],[3,4,5]],
-
-    [[0,1,2],[0,2,4],[2,3,4],[0,4,5]],
-    [[1,2,3],[0,1,5],[1,3,5],[3,4,5]]
-    ];
 
 ///////////
 
@@ -227,19 +193,24 @@ function redraw(){
       .attr("r", 6)
       .call(dragpoly);
 
-    var c_tri = [];
+    var cdiags = [];
     if(active_triangulation !== null){
       var T = triangulations[active_triangulation];
-      c_tri = T.map(function(tri){
-        return tri.map(function(pt) {
-          return polygon[pt];
-        });
-      });
+      var cdiags = triangulation_faces[active_triangulation];
     }
-    triangulation_path = triangulation_path.data(c_tri);
+    triangulation_path = triangulation_path.data(cdiags);
     triangulation_path.exit().remove();
     triangulation_path.enter().append("path").attr("class","triangulation");
-    triangulation_path.attr("d", poly_d_fn);
+    triangulation_path.attr("d", function(d){
+      var apt = polygon[diagonals[d][0]];
+      var bpt = polygon[diagonals[d][1]];
+      var path = [apt, bpt];
+      return "M" + apt + "L" + bpt;
+    });
+    triangulation_path.attr("stroke", function(d){
+      var h = d/asschdron_faces.length;
+      return "hsl("+(h*360)+",100%,80%)";
+    });
 
     var assoc_points = [];
     for (var i = 0; i < triangulations.length; i++) {
