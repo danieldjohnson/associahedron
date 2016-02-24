@@ -90,7 +90,8 @@ circle.polygon_v {
         <div id="c2c"><canvas id="c2" width="500" height="500"></canvas></div>
         <div id="info"><div id="infopanel" class="panel panel-default">
           <div class="panel-body">
-            <button id="resetbutton" class="btn btn-warning">Reset Hexagon</button>
+            <button id="reset_hex" class="btn btn-warning">Reset Hexagon</button>
+            <button id="reset_view" class="btn btn-info">Reset View</button>
             <div class="separator"></div>
             <h1>Associahedron Explorer</h1>
             <h4>A project by <strong>Daniel Johnson</strong>, <strong>Judge Lee</strong>, and <strong>Jackson Warley</strong>.</h4>
@@ -145,7 +146,7 @@ var triangulation_path = svg.append("g").selectAll("path.triangulation");
 var polygon_path_fg = svg.append("g").selectAll("path.polygon_fg");
 var polygon_verts = svg.append("g").selectAll("circle.polygon_v");
 
-document.getElementById("resetbutton").addEventListener("click",function(){
+document.getElementById("reset_hex").addEventListener("click",function(){
   reset_poly();
   redraw();
 });

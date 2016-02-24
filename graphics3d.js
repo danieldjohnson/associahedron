@@ -34,6 +34,14 @@ function init_graphics3d(w,h,cvs) {
 
     controls.addEventListener( 'change', render );
 
+    document.getElementById("reset_view").addEventListener("click",function(){
+        var old_damp = controls.dynamicDampingFactor;
+        controls.dynamicDampingFactor=1;
+        controls.update();
+        controls.reset();
+        controls.dynamicDampingFactor = old_damp;
+    });
+
     // world
 
     scene = new THREE.Scene();
