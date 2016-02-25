@@ -81,6 +81,19 @@ circle.polygon_v {
   stroke: #000;
   stroke-width:1px;
 }
+
+text.vertex_areas{
+  font-family:sans-serif;
+  font-size:12px;
+  text-anchor:middle;
+  pointer-events:none;
+}
+text.cur_vector{
+  font-family:sans-serif;
+  font-size:20px;
+  text-anchor: middle;
+  pointer-events:none;
+}
 </style>
 
 </head>
@@ -142,9 +155,16 @@ console.log(fp,PolyK.IsSimple(fp), PolyK.IsConvex(fp));
 
 var svg = d3.select("#c1");
 var polygon_path = svg.append("g").selectAll("path.polygon");
-var triangulation_path = svg.append("g").selectAll("path.triangulation");
 var polygon_path_fg = svg.append("g").selectAll("path.polygon_fg");
+var triangulation_path = svg.append("g").selectAll("path.triangulation");
 var polygon_verts = svg.append("g").selectAll("circle.polygon_v");
+var vertex_areas = svg.append("g").selectAll("text.vertex_areas");
+var cur_vector = svg.append("g")
+                    .append("text")
+                    .attr("class","cur_vector")
+                    .attr("x",250)
+                    .attr("y",30)
+                    .text("");
 
 document.getElementById("reset_hex").addEventListener("click",function(){
   reset_poly();
@@ -196,9 +216,14 @@ function redraw(){
       .call(dragpoly);
 
     var cdiags = [];
+    var careas = [];
     if(active_triangulation !== null){
       var T = triangulations[active_triangulation];
       var cdiags = triangulation_faces[active_triangulation];
+      careas = area_vector(T);
+      cur_vector.text("(" + careas.map(function(x){return Math.round(x/1000)}).join(", ") + ")");
+    } else {
+      cur_vector.text("");
     }
     triangulation_path = triangulation_path.data(cdiags);
     triangulation_path.exit().remove();
@@ -212,6 +237,26 @@ function redraw(){
     triangulation_path.attr("stroke", function(d){
       var h = d/asschdron_faces.length;
       return "hsl("+(h*360)+",100%,80%)";
+    });
+
+    vertex_areas = vertex_areas.data(careas);
+    vertex_areas.exit().remove();
+    vertex_areas.enter().append("text").attr("class","vertex_areas");
+    vertex_areas.text(function(d){
+      return Math.round(d/1000);
+    });
+    var pcx = 0, pcy = 0;
+    for (var i = 0; i < polygon.length; i++) {
+      var p = polygon[i];
+      pcx += p[0]/6;
+      pcy += p[1]/6;
+    }
+    vertex_areas.attr("x",function(d,i){
+      var dvec = numeric.sub(polygon[i],[pcx,pcy]);
+      return numeric.add(numeric.mul(numeric.div(dvec,numeric.norm2(dvec)),30), polygon[i])[0];
+    }).attr("y",function(d,i){
+      var dvec = numeric.sub(polygon[i],[pcx,pcy]);
+      return numeric.add(numeric.mul(numeric.div(dvec,numeric.norm2(dvec)),30), polygon[i])[1];
     });
 
     var assoc_points = [];
