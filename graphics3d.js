@@ -13,6 +13,8 @@ var active_triangulation = null;
 var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
 
+var toggle_backface_vis;
+
 function init_graphics3d(w,h,cvs) {
 
     camera = new THREE.PerspectiveCamera( 60, w / h, 0.001, 100000 );
@@ -133,6 +135,14 @@ function init_graphics3d(w,h,cvs) {
         // console.log(x,y,w,h,mouse.x, mouse.y);
         render();
     });
+
+    toggle_backface_vis = function(){
+        line_material_back.depthTest = !line_material_back.depthTest;
+        asschdron_points.map(function(p){
+            p.material.depthTest = !p.material.depthTest;
+        });
+        render();
+    }
 }
 
 function update_asschdron(points, extra_dim_color){

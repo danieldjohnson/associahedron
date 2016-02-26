@@ -22,11 +22,7 @@ body {
   bottom:0;
   right:0;
 }
-#c1c {
-  flex: 4;
-  min-width: 200px;
-}
-#c2c {
+#c1c,#c2c {
   flex: 4;
   min-width: 200px;
 }
@@ -34,6 +30,11 @@ body {
   width:100%;
   height:auto;
   max-width:500px;
+}
+.playspacer{
+  margin:10px;
+  padding:10px;
+  position:relative;
 }
 #info {
   flex: initial;
@@ -43,7 +44,10 @@ body {
   overflow: scroll;
 }
 #infopanel {
-  margin:20px;
+  margin:10px;
+}
+.mybtnmargin {
+  margin: 5px 0;
 }
 .separator {
   margin-top:10px;
@@ -88,23 +92,36 @@ text.vertex_areas{
   text-anchor:middle;
   pointer-events:none;
 }
-text.cur_vector{
+#cur_vector {
   font-family:sans-serif;
   font-size:20px;
-  text-anchor: middle;
-  pointer-events:none;
+  text-align:center;
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
 }
 </style>
 
 </head>
 <body>
     <div id="displays">
-        <div id="c1c"><svg id="c1" width="500" height="500" viewBox="0 0 500 500"></svg></div>
-        <div id="c2c"><canvas id="c2" width="500" height="500"></canvas></div>
+        <div id="c1c">
+          <div class="panel panel-default playspacer">
+            <svg id="c1" width="500" height="500" viewBox="0 0 500 500"></svg>
+          </div>
+        </div>
+        <div id="c2c">
+          <div class="panel panel-default playspacer">
+            <canvas id="c2" width="500" height="500"></canvas>
+            <div id="cur_vector">blah</div>
+          </div>
+        </div>
         <div id="info"><div id="infopanel" class="panel panel-default">
           <div class="panel-body">
-            <button id="reset_hex" class="btn btn-warning">Reset Hexagon</button>
-            <button id="reset_view" class="btn btn-info">Reset View</button>
+            <button id="reset_hex" class="btn btn-warning mybtnmargin">Reset Hexagon</button>
+            <button id="reset_view" class="btn btn-info mybtnmargin">Reset View</button>
+            <button id="toggle_back" class="btn btn-primary mybtnmargin">Toggle Back Visiblity</button>
             <div class="separator"></div>
             <h1>Associahedron Explorer</h1>
             <h4>A project by <strong>Daniel Johnson</strong>, <strong>Judge Lee</strong>, and <strong>Jackson Warley</strong>.</h4>
@@ -159,16 +176,14 @@ var polygon_path_fg = svg.append("g").selectAll("path.polygon_fg");
 var triangulation_path = svg.append("g").selectAll("path.triangulation");
 var polygon_verts = svg.append("g").selectAll("circle.polygon_v");
 var vertex_areas = svg.append("g").selectAll("text.vertex_areas");
-var cur_vector = svg.append("g")
-                    .append("text")
-                    .attr("class","cur_vector")
-                    .attr("x",250)
-                    .attr("y",30)
-                    .text("");
 
 document.getElementById("reset_hex").addEventListener("click",function(){
   reset_poly();
   redraw();
+});
+
+document.getElementById("toggle_back").addEventListener("click",function(){
+  toggle_backface_vis();
 });
 
 ///////////
@@ -217,14 +232,16 @@ function redraw(){
 
     var cdiags = [];
     var careas = [];
+    var vect_text;
     if(active_triangulation !== null){
       var T = triangulations[active_triangulation];
       var cdiags = triangulation_faces[active_triangulation];
       careas = area_vector(T);
-      cur_vector.text("(" + careas.map(function(x){return Math.round(x/1000)}).join(", ") + ")");
+      vect_text = "(" + careas.map(function(x){return Math.round(x/1000)}).join(", ") + ")";
     } else {
-      cur_vector.text("");
+      vect_text = "";
     }
+    document.getElementById("cur_vector").innerHTML = vect_text;
     triangulation_path = triangulation_path.data(cdiags);
     triangulation_path.exit().remove();
     triangulation_path.enter().append("path").attr("class","triangulation");
@@ -253,10 +270,10 @@ function redraw(){
     }
     vertex_areas.attr("x",function(d,i){
       var dvec = numeric.sub(polygon[i],[pcx,pcy]);
-      return numeric.add(numeric.mul(numeric.div(dvec,numeric.norm2(dvec)),30), polygon[i])[0];
+      return numeric.add(numeric.mul(numeric.div(dvec,numeric.norm2(dvec)),20), polygon[i])[0];
     }).attr("y",function(d,i){
       var dvec = numeric.sub(polygon[i],[pcx,pcy]);
-      return numeric.add(numeric.mul(numeric.div(dvec,numeric.norm2(dvec)),30), polygon[i])[1];
+      return numeric.add(numeric.mul(numeric.div(dvec,numeric.norm2(dvec)),20), polygon[i])[1];
     });
 
     var assoc_points = [];
