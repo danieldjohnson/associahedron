@@ -5,65 +5,69 @@
     <script src="//d3js.org/d3.v3.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r74/three.js"></script>
     <script type="text/javascript" src="http://polyk.ivank.net/polyk.js"></script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
     <script type="text/javascript" src="TrackballControls.js"></script>
     <script type="text/javascript" src="Detector.js"></script>
     <script type="text/javascript" src="numeric.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 <style>
-body {
-  overflow: hidden;
-}
 
 #displays {
   display: flex;
-  position:absolute;
-  top:0;
-  left:0;
-  bottom:0;
-  right:0;
 }
 #c1c,#c2c {
-  flex: 4;
-  min-width: 200px;
+  flex: 1;
+  min-width: 250px;
 }
 #c1,#c2{
   width:100%;
   height:auto;
   max-width:500px;
+  margin: 0 auto;
+  display: block;
 }
 .playspacer{
   margin:10px;
   padding:10px;
   position:relative;
 }
-#info {
-  flex: initial;
-  width:400px;
-  min-width: 200px;
-  height: 100%;
-  overflow: scroll;
-}
-#infopanel {
+
+.infopanel {
   margin:10px;
 }
-.mybtnmargin {
-  margin: 5px 0;
+#reset_hex {
+  position:absolute;
+  right:10px;
+  bottom:10px;
 }
+.helptext {
+  font-family:sans-serif;
+  font-size:10px;
+  text-align:center;
+  position:absolute;
+  bottom:10px;
+  left:10px;
+  right:10px;
+}
+@media (max-width: 600px) {
+  #draghelp {
+    text-align:left;
+  }
+}
+
 .separator {
   margin-top:10px;
   margin-bottom:10px;
   border-bottom: 1px solid #eee;
 }
-.attrib {
-  color: #222;
-  font-style: italic;
+
+.footer {
+  text-align: center;
+  color: gray;
+  font: 8px sans-serif;
+  margin:10px;
 }
-.imgembed {
-  width: 200px;
-  max-width: 100%;
-  margin:0 auto;
-  display:block;
-}
+
 
 path.polygon {
   fill: #ccc;
@@ -84,6 +88,7 @@ circle.polygon_v {
   fill: #ddd;
   stroke: #000;
   stroke-width:1px;
+  cursor: move;
 }
 
 text.vertex_areas{
@@ -92,63 +97,42 @@ text.vertex_areas{
   text-anchor:middle;
   pointer-events:none;
 }
-#cur_vector {
-  font-family:sans-serif;
-  font-size:20px;
-  text-align:center;
-  position:absolute;
-  bottom:0;
-  left:0;
-  right:0;
-}
 </style>
 
 </head>
 <body>
-    <div id="displays">
-        <div id="c1c">
-          <div class="panel panel-default playspacer">
-            <svg id="c1" width="500" height="500" viewBox="0 0 500 500"></svg>
-          </div>
-        </div>
-        <div id="c2c">
-          <div class="panel panel-default playspacer">
-            <canvas id="c2" width="500" height="500"></canvas>
-            <div id="cur_vector"></div>
-          </div>
-        </div>
-        <div id="info"><div id="infopanel" class="panel panel-default">
-          <div class="panel-body">
-            <button id="reset_hex" class="btn btn-warning mybtnmargin">Reset Hexagon</button>
-            <button id="reset_view" class="btn btn-info mybtnmargin">Reset View</button>
-            <button id="toggle_back" class="btn btn-primary mybtnmargin">Toggle Back Visiblity</button>
-            <div class="separator"></div>
-            <h1>Associahedron Explorer</h1>
-            <h4>A project by <strong>Daniel Johnson</strong>, <strong>Judge Lee</strong>, and <strong>Jackson Warley</strong>.</h4>
-            
-            <p>For any point set S, we can define the <strong>flip graph</strong> of S as a graph whose nodes are the set of triangulations of S, and whose edges represent triangulations which differ by a single flip. In particular, for a convex hexagon, the flip graph has the following structure:</p>
-            <img class="imgembed" src="flipgraph.png"/>
+<div class="info"><div class="infopanel panel panel-default">
+  <div class="panel-body">
+    <h1>Associahedron Explorer</h1>
+    <h3>A visualization of the GKZ realization of the associahedron.</h3>
+    <h4>By <strong>Daniel Johnson</strong>, <strong>Judge Lee</strong>, and <strong>Jackson Warley</strong>.</h4>
+    <div class="separator"></div>
+    <p>Given a convex hexagon and a <a href="https://en.wikipedia.org/wiki/Polygon_triangulation">triangulation</a> of it, each vertex can be assigned a number given by the sum of the areas of the triangles incident to it. These numbers are shown on the vertices of the hexagon below. Together, each triangulation of the hexagon yields a coordinate in \(\mathbb{R}^6\).</p>
 
-            <p>The flip graph of any convex polygon is in fact the 1-skeleton of a particular class of polytope called an <strong>associahedron</strong>. The vertices of this associahedron represent triangulations of the original polygon, and the edges represent flip connections.</p>
-  
-            <p>Additionally, we can define an <strong>area vector</strong> for a triangulation T of a point set with n vertices as a vector of n values, where the ith value is the sum of the areas of the triangles adjacent to the ith point. The computation of the area vectors for two particular triangulations are shown below.</p>
-            <img class="imgembed" src="areavectors.png"/>
-            <p>In the 1990s, Gelfand, Kapranov, and Zelevinsky showed that the associahedron is a <em>secondary</em> polytope. In particular, this means that the convex hull of the area vectors for each triangulation of a convex polygon is equivalent to the associahedron for that polygon.</p>
+    <p>By the <a href="http://www.maa.org/press/maa-reviews/discriminants-resultants-and-multidimensional-determinants">Gelfand-Kapranov-Zelevinsky theory on secondary polytopes</a>, taking the convex hull of these area vectors yields a geometric realization of the <a href="https://en.wikipedia.org/wiki/Associahedron">associahedron</a>, lying in a 3-dimensional subspace of \(\mathbb{R}^6\). As one deforms the underlying hexagon, this assochahedron also deforms naturally.</p>
 
-            <p>Our application displays a convex hexagon on the left, and the associahedron it corresponds to on the right. Features to try:</p>
-            <ul>
-            <li>Click and drag the associahedron to rotate it!</li>
-            <li>Scroll to zoom in and out.</li>
-            <li>Move the vertices of the hexagon, and see how the associahedron deforms!</li>
-            <li>Hover over a vertex of the associahedron to see the triangulation that corresponds to that node of the flip graph!</li>
-            <li>One cool property of the associahedron is that each face corresponds to a particular diagonal, so the diagonals and faces are color-coded. Try hovering over different vertices of the associahedron to see which diagonal each face represents!</li>
-            </ul>
-            <p>Hope you enjoy!</p>
-            <div class="separator"></div>
-            <p class="attrib">Made for Math 198o at HMC, based on suggestion by Professor Satyan Devadoss. Images from <i>Discrete and Computational Geometry</i>, by Satyan Devadoss and Joseph O'Rourke.</p>
-          </div>
-        </div></div>
+    <p>Notice that each facet of the associahedron corresponds to a diagonal of the hexagon, which are color-coded appropriately. Furthermore, each vertex of the associahedron corresponds to a specific triangulation of the hexagon, and the <a href="https://en.wikipedia.org/wiki/N-skeleton">1-skeleton</a> of the associahedron gives the <a href="https://en.wikipedia.org/wiki/Geometric_graph_theory">flip-graph</a> of the hexagon.
+  </div>
+</div></div>
+<div id="displays">
+  <div id="c1c">
+    <div class="panel panel-default playspacer">
+      <svg id="c1" width="500" height="500" viewBox="0 0 500 500"></svg>
+      <button id="reset_hex" class="btn btn-warning">Reset</button>
+      <div id="draghelp" class="helptext">Drag vertices to deform hexagon.</div>
     </div>
+  </div>
+  <div id="c2c">
+    <div class="panel panel-default playspacer">
+      <canvas id="c2" width="500" height="500"></canvas>
+      <div id="cur_vector" class="helptext"></div>
+    </div>
+  </div>
+</div>
+<div class="footer">
+    This visualization was inspired by the Discrete and Computational Geometry course at Harvey Mudd College, taught by Professor Satyan Devadoss in Spring 2016.
+</div>
+
 <script type="text/javascript" src="associahedron_data.js"></script>
 <script type="text/javascript" src="graphics3d.js"></script>
 <script>
@@ -179,11 +163,8 @@ var vertex_areas = svg.append("g").selectAll("text.vertex_areas");
 
 document.getElementById("reset_hex").addEventListener("click",function(){
   reset_poly();
+  reset_view_fn();
   redraw();
-});
-
-document.getElementById("toggle_back").addEventListener("click",function(){
-  toggle_backface_vis();
 });
 
 ///////////
@@ -196,10 +177,12 @@ function dragmove(d,i) {
   d[0] = d3.event.x;
   d[1] = d3.event.y;
 
-  if(d[0]<0) d[0]=0;
-  if(d[0]>width) d[0]=width;
-  if(d[1]<0) d[1]=0;
-  if(d[1]>height) d[1]=height;
+  var padding = 40;
+
+  if(d[0]<padding) d[0]=padding;
+  if(d[0]>width-padding) d[0]=width-padding;
+  if(d[1]<padding) d[1]=padding;
+  if(d[1]>height-padding) d[1]=height-padding;
 
   var fp = flatten_arr(polygon);
   if(!(PolyK.IsSimple(fp) && PolyK.IsConvex(fp))){
@@ -237,7 +220,7 @@ function redraw(){
       var T = triangulations[active_triangulation];
       var cdiags = triangulation_faces[active_triangulation];
       careas = area_vector(T);
-      vect_text = "(" + careas.map(function(x){return Math.round(x/1000)}).join(", ") + ")";
+      vect_text = "Selected area vector: (" + careas.map(function(x){return Math.round(x/1000)}).join(", ") + ")";
     } else {
       vect_text = "";
     }

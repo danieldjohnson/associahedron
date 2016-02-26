@@ -9,16 +9,17 @@ var bkgd_dists;
 var asschdron_points;
 var active_point = null;
 var active_triangulation = null;
+var active_ring_sprite;
 
 var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
 
-var toggle_backface_vis;
+var reset_view_fn;
 
 function init_graphics3d(w,h,cvs) {
 
     camera = new THREE.PerspectiveCamera( 60, w / h, 0.001, 100000 );
-    camera.position.z = 3;
+    camera.position.z = 2.5;
 
     controls = new THREE.TrackballControls( camera, cvs );
 
@@ -26,7 +27,7 @@ function init_graphics3d(w,h,cvs) {
     controls.zoomSpeed = 1.2;
     controls.panSpeed = 0.8;
 
-    controls.noZoom = false;
+    controls.noZoom = true;
     controls.noPan = true;
 
     controls.staticMoving = false;
@@ -36,13 +37,13 @@ function init_graphics3d(w,h,cvs) {
 
     controls.addEventListener( 'change', render );
 
-    document.getElementById("reset_view").addEventListener("click",function(){
+    reset_view_fn = function(){
         var old_damp = controls.dynamicDampingFactor;
         controls.dynamicDampingFactor=1;
         controls.update();
         controls.reset();
         controls.dynamicDampingFactor = old_damp;
-    });
+    };
 
     // world
 
@@ -93,12 +94,12 @@ function init_graphics3d(w,h,cvs) {
     mesh.matrixAutoUpdate = false;
     scene.add( mesh );
 
-    var line_material_back =  new THREE.LineDashedMaterial( { color: 0x000000, dashSize:.05, gapSize:.05, linewidth: 1, depthTest: false});
+    var line_material_back =  new THREE.LineBasicMaterial( { color: 0x000000, linewidth: 0.5, depthTest: false});
     bkgd_dists = line_material_back;
     var linesegs = new THREE.LineSegments(asschdron_lines,line_material_back);
     scene.add(linesegs);
 
-    var line_material_front =  new THREE.LineBasicMaterial( { color: 0x000000, linewidth: 2, depthTest: true});
+    var line_material_front =  new THREE.LineBasicMaterial( { color: 0x000000, linewidth: 3, depthTest: true});
     var linesegs2 = new THREE.LineSegments(asschdron_lines,line_material_front);
     scene.add(linesegs2);
     
@@ -111,6 +112,23 @@ function init_graphics3d(w,h,cvs) {
         asschdron_points.push(point);
         scene.add(point);
     }
+
+    var sprite_canvas = document.createElement('canvas');
+    sprite_canvas.width = 100;
+    sprite_canvas.height = 100;
+    var sprite_ctx = sprite_canvas.getContext('2d');
+    sprite_ctx.fillStyle = "transparent";
+    sprite_ctx.strokeStyle = "white";
+    sprite_ctx.lineWidth = 5;
+    sprite_ctx.beginPath();
+    sprite_ctx.arc(50,50,30,0,2*Math.PI);
+    sprite_ctx.stroke();
+    var ring_texture = new THREE.CanvasTexture(sprite_canvas);
+    var ring_mat = new THREE.SpriteMaterial( { map: ring_texture, color:0xe3632d, depthTest:false} );
+    active_ring_sprite = new THREE.Sprite( ring_mat );
+    active_ring_sprite.position.set( Math.Infinity,0,0 );
+    active_ring_sprite.scale.set(0.2,0.2,0.2);
+    scene.add(active_ring_sprite);
 
 
     // renderer
@@ -135,14 +153,6 @@ function init_graphics3d(w,h,cvs) {
         // console.log(x,y,w,h,mouse.x, mouse.y);
         render();
     });
-
-    toggle_backface_vis = function(){
-        line_material_back.depthTest = !line_material_back.depthTest;
-        asschdron_points.map(function(p){
-            p.material.depthTest = !p.material.depthTest;
-        });
-        render();
-    }
 }
 
 function update_asschdron(points, extra_dim_color){
@@ -216,6 +226,10 @@ function render() {
             active_triangulation = asschdron_points.indexOf(min_pt);
             redraw();
         }
+    }
+
+    if(active_point){
+        active_ring_sprite.position.copy(active_point.position);
     }
 
     renderer.render( scene, camera );
