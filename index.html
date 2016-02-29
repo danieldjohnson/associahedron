@@ -62,10 +62,8 @@
 }
 
 .footer {
-  text-align: center;
   color: gray;
-  font: 8px sans-serif;
-  margin:10px;
+  font-style: italic;
 }
 
 
@@ -103,15 +101,12 @@ text.vertex_areas{
 <body>
 <div class="info"><div class="infopanel panel panel-default">
   <div class="panel-body">
-    <h1>Associahedron Explorer</h1>
-    <h3>A visualization of the GKZ realization of the associahedron.</h3>
-    <h4>By <strong>Daniel Johnson</strong>, <strong>Judge Lee</strong>, and <strong>Jackson Warley</strong>.</h4>
+    <h1>GKZ Associahedron Realizer</h1>
+    <h4>By <strong><a href="http://www.hexahedria.com">Daniel Johnson</a></strong>, <strong><a href="https://github.com/URJudged">Judge Lee</a></strong>, and <strong><a href="https://github.com/jwarley">Jackson Warley</a></strong>.</h4>
     <div class="separator"></div>
-    <p>Given a convex hexagon and a <a href="https://en.wikipedia.org/wiki/Polygon_triangulation">triangulation</a> of it, each vertex can be assigned a number given by the sum of the areas of the triangles incident to it. These numbers are shown on the vertices of the hexagon below. Together, each triangulation of the hexagon yields a coordinate in \(\mathbb{R}^6\).</p>
+    <p>Given a convex hexagon and a <a href="https://en.wikipedia.org/wiki/Polygon_triangulation">triangulation</a> of it, each vertex can be assigned a number (shown left) given by the sum of the areas of the triangles incident to it.  Together, each triangulation of the hexagon yields a coordinate in \(\mathbb{R}^6\).  By the <a href="http://www.maa.org/press/maa-reviews/discriminants-resultants-and-multidimensional-determinants">Gelfand-Kapranov-Zelevinsky theory on secondary polytopes</a>, taking the convex hull of these coordinates results in a geometric realization of the <a href="https://en.wikipedia.org/wiki/Associahedron">associahedron</a> (shown right), lying in a 3D subspace of \(\mathbb{R}^6\).  As one deforms the underlying hexagon, the associahedron also deforms continuously.  Notice that each facet of the associahedron corresponds to a diagonal of the hexagon (colored appropriately), and each vertex corresponds to a specific triangulation of the hexagon (selectable).</p>
 
-    <p>By the <a href="http://www.maa.org/press/maa-reviews/discriminants-resultants-and-multidimensional-determinants">Gelfand-Kapranov-Zelevinsky theory on secondary polytopes</a>, taking the convex hull of these area vectors yields a geometric realization of the <a href="https://en.wikipedia.org/wiki/Associahedron">associahedron</a>, lying in a 3-dimensional subspace of \(\mathbb{R}^6\). As one deforms the underlying hexagon, this associahedron also deforms naturally.</p>
-
-    <p>Notice that each facet of the associahedron corresponds to a diagonal of the hexagon, which are color-coded appropriately. Furthermore, each vertex of the associahedron corresponds to a specific triangulation of the hexagon, and the <a href="https://en.wikipedia.org/wiki/N-skeleton">1-skeleton</a> of the associahedron gives the <a href="https://en.wikipedia.org/wiki/Geometric_graph_theory">flip-graph</a> of the hexagon.
+    <p class="footer">This visualization was inspired by the Discrete and Computational Geometry course at Harvey Mudd College, taught by <a href="http://satyandevadoss.org/">Professor Satyan Devadoss</a> in Spring 2016.</p>
   </div>
 </div></div>
 <div id="displays">
@@ -128,9 +123,6 @@ text.vertex_areas{
       <div id="cur_vector" class="helptext"></div>
     </div>
   </div>
-</div>
-<div class="footer">
-    This visualization was inspired by the Discrete and Computational Geometry course at Harvey Mudd College, taught by Professor Satyan Devadoss in Spring 2016.
 </div>
 
 <script type="text/javascript" src="associahedron_data.js"></script>
@@ -220,7 +212,7 @@ function redraw(){
       var T = triangulations[active_triangulation];
       var cdiags = triangulation_faces[active_triangulation];
       careas = area_vector(T);
-      vect_text = "Selected area vector: (" + careas.map(function(x){return Math.round(x/1000)}).join(", ") + ")";
+      vect_text = "Hover over vertices to display area vector.<br>Current selection: (" + careas.map(function(x){return Math.round(x/1000)}).join(", ") + ")";
     } else {
       vect_text = "";
     }
