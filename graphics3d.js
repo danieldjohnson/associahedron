@@ -18,8 +18,8 @@ var reset_view_fn;
 
 function init_graphics3d(w,h,cvs) {
 
-    camera = new THREE.PerspectiveCamera( 60, w / h, 0.001, 100000 );
-    camera.position.z = 2;
+    camera = new THREE.PerspectiveCamera( 35, w / h, 0.001, 100000 );
+    camera.position.z = 3.6;
 
     controls = new THREE.TrackballControls( camera, cvs );
 
