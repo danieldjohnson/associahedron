@@ -114,14 +114,14 @@ function init_graphics3d(w,h,cvs) {
     }
 
     var sprite_canvas = document.createElement('canvas');
-    sprite_canvas.width = 100;
-    sprite_canvas.height = 100;
+    sprite_canvas.width = 128;
+    sprite_canvas.height = 128;
     var sprite_ctx = sprite_canvas.getContext('2d');
     sprite_ctx.fillStyle = "transparent";
     sprite_ctx.strokeStyle = "white";
     sprite_ctx.lineWidth = 5;
     sprite_ctx.beginPath();
-    sprite_ctx.arc(50,50,30,0,2*Math.PI);
+    sprite_ctx.arc(64,64,40,0,2*Math.PI);
     sprite_ctx.stroke();
     var ring_texture = new THREE.CanvasTexture(sprite_canvas);
     var ring_mat = new THREE.SpriteMaterial( { map: ring_texture, color:0xe3632d, depthTest:false} );
