@@ -4,12 +4,13 @@ var camera, controls, scene, renderer;
 
 var asschdron_geometry;
 var asschdron_colors;
-var asschdron_lines;
 var bkgd_dists;
 var asschdron_points;
 var active_point = null;
 var active_triangulation = null;
 var active_ring_sprite;
+
+var asschdron_line_segments;
 
 var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
@@ -51,7 +52,7 @@ function init_graphics3d(w,h,cvs) {
     scene.fog = new THREE.FogExp2( 0xffffff, 0 );
 
     asschdron_geometry = new THREE.Geometry();
-    asschdron_lines = new THREE.Geometry();
+    // asschdron_lines = new THREE.Geometry();
     asschdron_colors = [];
 
     for (var i = 0; i < 14; i++) {
@@ -77,12 +78,6 @@ function init_graphics3d(w,h,cvs) {
         }
     }
 
-    for (var i = 0; i < asschdron_edges.length; i++) {
-        var vert = asschdron_edges[i];
-        asschdron_lines.vertices.push(asschdron_geometry.vertices[vert]);
-    }
-    asschdron_lines.computeLineDistances();
-
     //vertexColors: THREE.VertexColors,
     asschdron_material =  new THREE.MeshBasicMaterial( { side:THREE.DoubleSide, vertexColors: THREE.VertexColors,  shading: THREE.FlatShading } );
 
@@ -94,14 +89,40 @@ function init_graphics3d(w,h,cvs) {
     mesh.matrixAutoUpdate = false;
     scene.add( mesh );
 
-    var line_material_back =  new THREE.LineBasicMaterial( { color: 0x000000, linewidth: 0.5, depthTest: false});
-    bkgd_dists = line_material_back;
-    var linesegs = new THREE.LineSegments(asschdron_lines,line_material_back);
-    scene.add(linesegs);
 
-    var line_material_front =  new THREE.LineBasicMaterial( { color: 0x000000, linewidth: 3, depthTest: true});
-    var linesegs2 = new THREE.LineSegments(asschdron_lines,line_material_front);
-    scene.add(linesegs2);
+    asschdron_line_segments = [];
+    var resolution = new THREE.Vector2( cvs.width, cvs.height );
+    var line_material_back = new MeshLineMaterial({
+        color: new THREE.Color(0x000000),
+        depthTest: false,
+        near: camera.near,
+        far: camera.far,
+        resolution: resolution,
+        lineWidth: 0.01,
+        sizeAttenuation: true,
+    });
+    var line_material_front = new MeshLineMaterial({
+        color: new THREE.Color(0x000000),
+        depthTest: true,
+        near: camera.near,
+        far: camera.far,
+        resolution: resolution,
+        lineWidth: 0.02,
+        sizeAttenuation: true,
+    });
+    for (var i = 0; i < asschdron_edges.length; i++) {
+        var geo = new THREE.Geometry();
+        var verts = asschdron_edges[i];
+        geo.vertices.push(asschdron_geometry.vertices[verts[0]]);
+        geo.vertices.push(asschdron_geometry.vertices[verts[1]]);
+        var lgeo = new MeshLine();
+        lgeo.setGeometry(geo);
+        var bmesh = new THREE.Mesh(lgeo.geometry, line_material_back);
+        var fmesh = new THREE.Mesh(lgeo.geometry, line_material_front);
+        scene.add(bmesh);
+        scene.add(fmesh);
+        asschdron_line_segments.push([geo, lgeo]);
+    }
     
     var point_geometry = new THREE.SphereGeometry( 0.03, 32, 32 );
     var point_material = new THREE.MeshBasicMaterial( {color: 0x000000, depthTest: false} );
@@ -133,7 +154,7 @@ function init_graphics3d(w,h,cvs) {
 
     // renderer
 
-    renderer = new THREE.WebGLRenderer( { antialias: false, canvas:cvs } );
+    renderer = new THREE.WebGLRenderer( { antialias: true, canvas:cvs } );
     renderer.setClearColor( scene.fog.color );
     renderer.setPixelRatio( window.devicePixelRatio );
     // renderer.setSize( w, h );
@@ -187,10 +208,10 @@ function update_asschdron(points, extra_dim_color){
     asschdron_geometry.normalize();
     asschdron_geometry.verticesNeedUpdate = true;
     asschdron_geometry.colorsNeedUpdate = true;
-    asschdron_lines.verticesNeedUpdate = true;
-    asschdron_lines.lineDistancesNeedUpdate = true;
-    asschdron_lines.computeLineDistances();
-    bkgd_dists.needsUpdate = true;
+    for (var i = 0; i < asschdron_line_segments.length; i++) {
+        var ls = asschdron_line_segments[i];
+        ls[1].setGeometry(ls[0]);
+    }
     for (var i = 0; i < asschdron_points.length; i++) {
         asschdron_points[i].position.copy(asschdron_geometry.vertices[i]);
     }

@@ -49,7 +49,7 @@ for (var i = 0; i < asschdron_faces.length; i++) {
 
         if(!used[key]){
             used[key] = true;
-            asschdron_edges.push(first, second);
+            asschdron_edges.push([first, second]);
         }
     }
 }
